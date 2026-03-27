@@ -1,0 +1,67 @@
+@using BlazorTestProject.Models
+@rendermode InteractiveServer
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white">
+        <h2 class="h4 mb-1">User Form</h2>
+        <p class="text-muted mb-0">Please enter the user information below.</p>
+    </div>
+
+    <div class="card-body">
+        <EditForm Model="Model" FormName="UserForm" OnValidSubmit="HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="alert alert-danger mb-4" />
+
+            <div class="row g-3">
+                <div class="col-12">
+                    <label for="name" class="form-label">Name</label>
+                    <InputText id="name" class="form-control" @bind-Value="Model.Name" />
+                    <ValidationMessage For="@(() => Model.Name)" class="text-danger small d-block mt-1" />
+                </div>
+
+                <div class="col-12">
+                    <label for="address" class="form-label">Address</label>
+                    <InputText id="address" class="form-control" @bind-Value="Model.Address" />
+                    <ValidationMessage For="@(() => Model.Address)" class="text-danger small d-block mt-1" />
+                </div>
+
+                <div class="col-md-4">
+                    <label for="age" class="form-label">Age</label>
+                    <InputNumber id="age" class="form-control" @bind-Value="Model.Age" />
+                    <ValidationMessage For="@(() => Model.Age)" class="text-danger small d-block mt-1" />
+                </div>
+
+                <div class="col-md-8">
+                    <label for="email" class="form-label">Email Address</label>
+                    <InputText id="email" class="form-control" @bind-Value="Model.Email" />
+                    <ValidationMessage For="@(() => Model.Email)" class="text-danger small d-block mt-1" />
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary" disabled="@IsSubmitting">
+                    @(IsSubmitting ? "Submitting..." : SubmitButtonText)
+                </button>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public UserModel Model { get; set; } = default!;
+
+    [Parameter]
+    public string SubmitButtonText { get; set; } = "Submit";
+
+    [Parameter]
+    public bool IsSubmitting { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback<UserModel> OnSubmit { get; set; }
+
+    private async Task HandleValidSubmit()
+    {
+        await OnSubmit.InvokeAsync(Model);
+    }
+}

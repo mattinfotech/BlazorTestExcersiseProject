@@ -1,0 +1,82 @@
+﻿@page "/"
+@rendermode InteractiveServer
+@using BlazorTestProject.Models
+@using Microsoft.AspNetCore.Components.Web
+
+<PageTitle>User Form Demo</PageTitle>
+<div class="container">
+    <UserForm Model="User"
+              SubmitButtonText="Save User"
+              IsSubmitting="IsSubmitting"
+              OnSubmit="HandleSubmit" />
+
+    @if (!string.IsNullOrWhiteSpace(StatusMessage))
+    {
+        <div class="alert alert-success shadow-sm mt-3 mb-0" role="alert">
+            @StatusMessage
+        </div>
+    }
+</div>
+
+
+@if (SubmittedUser is not null)
+{
+    <div class="card mt-4 shadow-sm">
+        <div class="card-body">
+            <h2 class="card-title h4 mb-3">Submitted Data</h2>
+
+            <div class="row mb-2">
+                <div class="col-sm-3 fw-semibold">Name</div>
+                <div class="col-sm-9">@SubmittedUser.Name</div>
+            </div>
+
+            <div class="row mb-2">
+                <div class="col-sm-3 fw-semibold">Address</div>
+                <div class="col-sm-9">@SubmittedUser.Address</div>
+            </div>
+
+            <div class="row mb-2">
+                <div class="col-sm-3 fw-semibold">Age</div>
+                <div class="col-sm-9">@SubmittedUser.Age</div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-3 fw-semibold">Email</div>
+                <div class="col-sm-9">@SubmittedUser.Email</div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private UserModel User { get; set; } = new();
+    private UserModel? SubmittedUser { get; set; }
+    private bool IsSubmitting { get; set; }
+    private string? StatusMessage { get; set; }
+
+    private async Task HandleSubmit(UserModel submittedUser)
+    {
+        IsSubmitting = true;
+        StatusMessage = null;
+
+        try
+        {
+            await Task.Delay(300);
+
+            SubmittedUser = new UserModel
+            {
+                Name = submittedUser.Name?.Trim(),
+                Address = submittedUser.Address?.Trim(),
+                Age = submittedUser.Age,
+                Email = submittedUser.Email?.Trim().ToLowerInvariant()
+            };
+
+            StatusMessage = $"User '{SubmittedUser.Name}' was submitted successfully.";
+            User = new UserModel();
+        }
+        finally
+        {
+            IsSubmitting = false;
+        }
+    }
+}
